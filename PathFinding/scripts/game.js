@@ -136,16 +136,6 @@ function clearColor(){
 	}
 }
 
-function events()
-{
-
-}
-
-function dispose ()
-{
-
-}
-
 function main()
 {
     enable_debug('debug');
@@ -154,11 +144,9 @@ function main()
 	ready(function(){
         loop(function(){
             clear_to_color(canvas,makecol(255,255,255));
-			aStar();
-			dispose();
+			aStarStep();
 			controls();
             update();
-			events();
             draw();
         },BPS_TO_TIMER(60));
     });
@@ -211,7 +199,7 @@ function det_matrix(xx,xy,yx,yy,zx,zy)
 	return (xx*yy + yx*zy + zx*xy - zx*yy - xx*zy - yx*xy);
 }
 
-function aStar(){
+function aStarStep(){
 	if( front.size() > 0){
 		current = front.pop()
 	
