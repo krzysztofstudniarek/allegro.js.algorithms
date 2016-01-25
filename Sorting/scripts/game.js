@@ -43,7 +43,7 @@ function main()
     enable_debug('debug');
     allegro_init_all("game_canvas", width, height);
 	load_elements();
-	font = load_font("antilles.ttf");
+	font = load_font("../antilles.ttf");
 	ready(function(){
         loop(function(){
             clear_to_color(canvas,makecol(255,255,255));
