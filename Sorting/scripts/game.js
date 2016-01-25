@@ -104,7 +104,7 @@ function quickSortStep(){
 		right = stack [t--];
 		left = stack [t--];
 		
-		var p = partition( left, right);
+		var p = partition(left, right);
 		
 		if(p-1 > left){
 			stack [++t] = left;
@@ -135,7 +135,7 @@ function partition(left, right){
 	return i;
 }
 
-function swap(arr, x,y){
+function swap(arr, x , y){
 	tmp = arr[x];
 	arr[x] = arr[y];
 	arr[y] = tmp;
