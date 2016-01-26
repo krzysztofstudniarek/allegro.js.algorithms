@@ -1,28 +1,49 @@
-var width = 640, height=480;
+var width = 640, height=960;
 
 var cells = [];
+
+var cellsD = [];
 
 var w = 20, h = 20;
 var cellSize = 15;
 
 var startCell, endCell;
 
-var fornt;
+var startCellD, endCellD;
+
+var front;
 var came_from = new Map();
 var	cost_so_far = new Map();
 var current;
 
+var frontD;
+var came_fromD = new Map();
+var	cost_so_farD = new Map();
+var currentD;
+
+
 function draw()
 {   
+
+	textout(canvas,font,"A* :",0,150,25,makecol(0,0,0));
+	
+	textout(canvas,font,"Dijkstra :",0,height/2,25,makecol(0,0,0));
+
+	drawPlayground(cells);
+	drawPlayground(cellsD);
+}
+
+function drawPlayground(tab){
 	for(var i = 0; i<w; i++){
 		for(var j = 0; j<h; j++){
 			
-			var value = cells[i][j];
+			var value = tab[i][j];
+			
 			if(!value.disabled){
 				
 				var color1, color2, color3;
 				
-				if(value != startCell && value != endCell){
+				if(value != startCell && value != endCell && value != startCellD && value != endCellD){
 					if(value.color == 'grey'){
 						color1 = makecol(145,145,145);
 						color2 = makecol(100,100,100);
@@ -43,11 +64,11 @@ function draw()
 						color2 = makecol(100,0,0);
 						color3 = makecol(200,0,0);
 					}
-				}else if(value == endCell){
+				}else if(value == endCell || value == endCellD){
 					color1 = makecol(0,0,145);
 					color2 = makecol(0,0,100);
 					color3 = makecol(0,0,200);
-				}else if(value == startCell){
+				}else if(value == startCell || value == startCellD){
 					color1 = makecol(0,145,0);
 					color2 = makecol(0,100,0);
 					color3 = makecol(0,200,0);
@@ -69,20 +90,19 @@ function draw()
 			}
 		}
 	}
-	
-}
-
-function update()
-{	
-
 }
 
 function controls ()
 {
+	controlPlayground(cells);
+	controlPlayground(cellsD);
+}
+
+function controlPlayground(tab){
 	for(var i = 0; i<w; i++){
 		for(var j = 0; j<h; j++){
 			
-			value = cells[i][j];
+			value = tab[i][j];
 			
 			if(abs(mouse_x - value.x)<cellSize && abs(mouse_y - value.y + value.height)<cellSize/2){
 				if(
@@ -97,14 +117,22 @@ function controls ()
 				}else{
 					if(mouse_pressed && !value.disabled){
 						if(startCell == undefined && endCell == undefined){
-							startCell = value;
+							startCell = cells[i][j];
+							startCellD = cellsD[i][j];
 						}else if(endCell == undefined && value != startCell){
-							endCell = value;
+							endCell = cells[i][j];
+							endCellD = cellsD[i][j];
+							
 							startCell.f = 0;
 							front.push(startCell);
 							came_from.set(startCell, null);
 							cost_so_far.set(startCell, 0);
-							//aStar();
+							
+							startCellD.f = 0;
+							frontD.push(startCellD);
+							came_fromD.set(startCellD, null);
+							cost_so_farD.set(startCellD, 0);
+
 						}else if(endCell != undefined && startCell != undefined){
 							startCell = value;
 							endCell = undefined;
@@ -132,6 +160,7 @@ function clearColor(){
 	for(var i = 0; i< w; i++){
 		for(var j = 0; j<h; j++){
 			cells[i][j].color = 'grey';
+			cellsD[i][j].color = 'grey';
 		}
 	}
 }
@@ -139,14 +168,15 @@ function clearColor(){
 function main()
 {
     enable_debug('debug');
-    allegro_init_all("game_canvas", width, height);
+    allegro_init_all("path_game_canvas", width, height);
 	load_elements();
+	font = load_font("../antilles.ttf");
 	ready(function(){
         loop(function(){
             clear_to_color(canvas,makecol(255,255,255));
 			aStarStep();
+			dijkstraStep();
 			controls();
-            update();
             draw();
         },BPS_TO_TIMER(60));
     });
@@ -157,23 +187,45 @@ END_OF_MAIN();
 function load_elements()
 {
 	cells = [];
+	cellsD = [];
 	for(var j =0; j < w; j++){
-		cells[j] = []
+		cells[j] = [];
+		cellsD[j] = [];
 		for(var i =0; i < h; i++){
+			var dis =  frand()<0.1;
+			
 			cells[j][i] = {
 				xPos: j,
 				yPos: i,
 				x: width/2 + cellSize*i - cellSize*j,
-				y: height/2 - max(w,h)*cellSize/2 + cellSize/2*j + cellSize/2*i + cellSize/2, 
+				y: height/4- max(w,h)*cellSize/2 + cellSize/2*j + cellSize/2*i + cellSize/2, 
 				height: cellSize,//rand()%50,
 				color: 'grey',
-				disabled : frand()<0.1,
+				disabled : dis,
 				f : 9007199254740992
-			}
+			};
+			
+			cellsD[j][i] = {
+				xPos: j,
+				yPos: i,
+				x: width/2 + cellSize*i - cellSize*j,
+				y: height/2 + 100 - max(w,h)*cellSize/2 + cellSize/2*j + cellSize/2*i + cellSize/2, 
+				height: cellSize,//rand()%50,
+				color: 'grey',
+				disabled : dis,
+				f : 9007199254740992
+			};
 		}
 	}
 	
+	
+
+	
 	front = new BinaryHeap(function(node){
+		return node.f;
+	});
+	
+	frontD = new BinaryHeap(function(node){
 		return node.f;
 	});
 }
@@ -213,7 +265,7 @@ function aStarStep(){
 		
 		//console.log(getNeighbors(current));
 		
-		getNeighbors(current).forEach(function(value){
+		getNeighbors(cells, current).forEach(function(value){
 			var new_cost = cost_so_far.get(current) + 1;
 			if(cost_so_far.get(value) == undefined || new_cost < cost_so_far.get(value)){
 				cost_so_far.set(value, new_cost);
@@ -230,27 +282,70 @@ function aStarStep(){
 	//getRoute(came_from);
 }
 
+function dijkstraStep(){
+	if( frontD.size() > 0){
+		currentD = frontD.pop()
+	
+		if(currentD == endCellD){
+			frontD = new BinaryHeap(function(node){
+				return node.f;
+			});
+			getRouteD(came_fromD);
+			return;
+		}
+		
+		getNeighbors(cellsD, currentD).forEach(function(value){
+			var new_cost = cost_so_farD.get(currentD) + 1;
+			if(cost_so_farD.get(value) == undefined || new_cost < cost_so_farD.get(value)){
+				cost_so_farD.set(value, new_cost);
+				priority = new_cost;
+				value.f = priority;
+				value.color = 'black';
+				frontD.push(value);
+				came_fromD.set(value, currentD);
+			}
+		});
+	}
+}
+
 function getRoute(came_from){
+	var ind = 0;
 	var current = came_from.get(endCell);
 	while(current != null){
 		current.color = 'white';
 		current = came_from.get(current);
+		ind ++;
 	}
+	console.log(ind);
 }
 
-function getNeighbors(cell){
+function getRouteD(came_from){
+	var ind = 0;
+	var currentD = came_from.get(endCellD);
+	while(currentD != null){
+		currentD.color = 'white';
+		currentD = came_from.get(currentD);
+		ind++;
+	}
+	console.log(ind);
+}
+
+function getNeighbors( tab ,cell){
+	
 	var set = new Set();
-	if(cell.xPos >= 1 && !cells[cell.xPos-1][cell.yPos].disabled)
-		set.add(cells[cell.xPos-1][cell.yPos]);
-	if(cell.xPos < w-1 && !cells[cell.xPos+1][cell.yPos].disabled)
-		set.add(cells[cell.xPos+1][cell.yPos]);
-	if(cell.yPos >= 1 && !cells[cell.xPos][cell.yPos-1].disabled)
-		set.add(cells[cell.xPos][cell.yPos-1]);
-	if(cell.yPos < h-1 && !cells[cell.xPos][cell.yPos+1].disabled)
-		set.add(cells[cell.xPos][cell.yPos+1]);
+	if(cell.xPos >= 1 && !tab[cell.xPos-1][cell.yPos].disabled)
+		set.add(tab[cell.xPos-1][cell.yPos]);
+	if(cell.xPos < w-1 && !tab[cell.xPos+1][cell.yPos].disabled)
+		set.add(tab[cell.xPos+1][cell.yPos]);
+	if(cell.yPos >= 1 && !tab[cell.xPos][cell.yPos-1].disabled)
+		set.add(tab[cell.xPos][cell.yPos-1]);
+	if(cell.yPos < h-1 && !tab[cell.xPos][cell.yPos+1].disabled)
+		set.add(tab[cell.xPos][cell.yPos+1]);
 	
 	return set;
 }
+
+
 
 function heuristic(a,b){
 	return abs(a.xPos - b.xPos)+abs(a.yPos-b.yPos);

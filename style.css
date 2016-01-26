@@ -5,6 +5,13 @@
 	height: 480px;
 }
 
+#path_game_canvas { 
+	margin: 10px auto; 
+	display:block; 
+	width: 640px;
+	height: 960px;
+}
+
 body { /* this applies to the entire document */
 	font-family:'Roboto', sans-serif; /* Select font without serifs */
 }
