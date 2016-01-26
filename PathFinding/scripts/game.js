@@ -25,9 +25,9 @@ var currentD;
 function draw()
 {   
 
-	textout(canvas,font,"A* :",0,150,25,makecol(0,0,0));
+	textout(canvas,font,"A* :",0,250,25,makecol(0,0,0));
 	
-	textout(canvas,font,"Dijkstra :",0,height/2,25,makecol(0,0,0));
+	textout(canvas,font,"Dijkstra :",0,height/2+100,25,makecol(0,0,0));
 
 	drawPlayground(cells);
 	drawPlayground(cellsD);
@@ -134,8 +134,24 @@ function controlPlayground(tab){
 							cost_so_farD.set(startCellD, 0);
 
 						}else if(endCell != undefined && startCell != undefined){
-							startCell = value;
+							startCell = cells[i][j];
+							startCellD = cellsD[i][j];
 							endCell = undefined;
+							endCellD = undefined;
+							
+							front = new BinaryHeap(function(node){
+								return node.f;
+							});
+							
+							frontD = new BinaryHeap(function(node){
+								return node.f;
+							});
+							
+							came_from = new Map();
+							cost_so_far = new Map();
+							came_fromD = new Map();
+							cost_so_farD = new Map();
+							
 							clearColor();
 						}
 						
@@ -198,7 +214,7 @@ function load_elements()
 				xPos: j,
 				yPos: i,
 				x: width/2 + cellSize*i - cellSize*j,
-				y: height/4- max(w,h)*cellSize/2 + cellSize/2*j + cellSize/2*i + cellSize/2, 
+				y: 100+height/4- max(w,h)*cellSize/2 + cellSize/2*j + cellSize/2*i + cellSize/2, 
 				height: cellSize,//rand()%50,
 				color: 'grey',
 				disabled : dis,
@@ -209,7 +225,7 @@ function load_elements()
 				xPos: j,
 				yPos: i,
 				x: width/2 + cellSize*i - cellSize*j,
-				y: height/2 + 100 - max(w,h)*cellSize/2 + cellSize/2*j + cellSize/2*i + cellSize/2, 
+				y: height/2 + 200 - max(w,h)*cellSize/2 + cellSize/2*j + cellSize/2*i + cellSize/2, 
 				height: cellSize,//rand()%50,
 				color: 'grey',
 				disabled : dis,
@@ -252,7 +268,7 @@ function det_matrix(xx,xy,yx,yy,zx,zy)
 }
 
 function aStarStep(){
-	if( front.size() > 0){
+	if( front.size() > 0 && startCell != undefined && endCell != undefined){
 		current = front.pop()
 	
 		if(current == endCell){
@@ -283,7 +299,7 @@ function aStarStep(){
 }
 
 function dijkstraStep(){
-	if( frontD.size() > 0){
+	if( frontD.size() > 0 && startCellD != undefined && endCellD != undefined){
 		currentD = frontD.pop()
 	
 		if(currentD == endCellD){
