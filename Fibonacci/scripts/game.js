@@ -20,23 +20,18 @@ function draw()
 		if(i%4 == 1){
 			moveX -= (fib[i]-fib[i-1]);
 			rect (canvas, midX + moveX*r, midY + moveY*r, fib[i]*r, fib[i]*r, makecol(0,0,0), 1);
-			arc(canvas, midX + moveX*r, midY + moveY*r, DEG(PI*(i-1)/2), DEG(PI*i/2), fib[i]*r, makecol(0,0,0), 2);
-			
 		}else if(i%4 == 2){
 			moveY -= (fib[i]-fib[i-1]);
 			rect (canvas, midX + moveX*r-fib[i]*r, midY + moveY*r, fib[i]*r, fib[i]*r, makecol(0,0,0), 1);
-			arc(canvas, midX + moveX*r, midY + moveY*r, DEG(PI*(i-1)/2), DEG(PI*i/2), fib[i]*r, makecol(0,0,0), 2);
-			
 		}else if(i%4 == 3){
 			moveX += (fib[i]-fib[i-1]);
 			rect (canvas, midX + moveX*r - fib[i]*r, midY + moveY*r - fib[i]*r, fib[i]*r, fib[i]*r, makecol(0,0,0), 1);
-			arc (canvas, midX + moveX*r, midY + moveY*r, DEG(PI*(i-1)/2), DEG(PI*i/2), fib[i]*r, makecol(0,0,0), 2);
-			
 		}else if(i%4 == 0){
 			moveY += (fib[i]-fib[i-1]);
 			rect (canvas, midX + moveX*r, midY + moveY*r - fib[i]*r, fib[i]*r, fib[i]*r, makecol(0,0,0), 1);
-			arc (canvas, midX + moveX*r, midY + moveY*r, DEG(PI*(i-1)/2), DEG(PI*i/2), fib[i]*r, makecol(0,0,0), 2);
 		}
+		
+		arc(canvas, midX + moveX*r, midY + moveY*r, DEG(PI*(i-1)/2), DEG(PI*i/2), fib[i]*r, makecol(0,0,0), 2);
 	}
 }
 
